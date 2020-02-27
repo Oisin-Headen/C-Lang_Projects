@@ -7,13 +7,13 @@
  ***********************************************************************/
 #include "picedit_main.h"
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     struct picedit_system picedit;
     struct command commands[NUM_COMMANDS];
-    struct line * input_line;
-    BOOLEAN loaded_successfully, input_entered, 
-                    executed_successfully;
+    struct line *input_line;
+    BOOLEAN loaded_successfully, input_entered,
+        executed_successfully;
 
     struct command user_command;
     struct command_input processed_command;
@@ -28,16 +28,16 @@ int main(int argc, char* argv[])
      * it is a file you should open and load into the picedit_line_list
      * data structure.
      */
-    if(argc == ONE_ARG)
+    if (argc == ONE_ARG)
     {
         loaded_successfully = picedit_load(&picedit, argv[FILENAME_ARG]);
-        if(!loaded_successfully)
+        if (!loaded_successfully)
         {
             /* could not open the file for some reason */
             perror("failed to open file");
         }
     }
-    else if(argc != NO_ARGS)
+    else if (argc != NO_ARGS)
     {
         printf("Error: incorrect number of arguments\n");
         return EXIT_FAILURE;
@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
     /* allocate memory for the input line */
     /* passing 0 as the line number, since no line number makes sense */
     input_line = line_init(0);
-    if(input_line == NULL)
+    if (input_line == NULL)
     {
         /* malloc failed, so program exits */
         return EXIT_FAILURE;
@@ -59,16 +59,16 @@ int main(int argc, char* argv[])
     /* while the user has not decided to quit, read and process their
      * command
      */
-    while(!picedit.quit)
+    while (!picedit.quit)
     {
         /* prints the star at the start of each line */
         printf("* ");
-    
+
         /* get input from the user */
-        switch(picedit_get_input(input_line))
+        switch (picedit_get_input(input_line))
         {
 
-            case IR_SUCCESS:
+        case IR_SUCCESS:
             /* process the line entered - in particular, extract the
              * command char and separate that from the rest of the 
              * command - we need to know the command char to know 
@@ -76,10 +76,10 @@ int main(int argc, char* argv[])
              */
             /* don't need to get the return value, any error will
              * turn the processed_command's cchar to CC_INVALID */
-            input_entered = picedit_process_command(input_line, 
-                                                &processed_command);
+            input_entered = picedit_process_command(input_line,
+                                                    &processed_command);
 
-            if(!input_entered)
+            if (!input_entered)
             {
                 /* no user input, so just skip back to the start of the loop */
                 continue;
@@ -88,33 +88,33 @@ int main(int argc, char* argv[])
             /* get the function pointer for the command that has 
              * been entered
              */
-            user_command = picedit_command_get(commands, 
-                                                   processed_command.cchar);  
+            user_command = picedit_command_get(commands,
+                                               processed_command.cchar);
             /* if what was entered was an invalid command, display
              * an error message 
              */
-            if(user_command.command_char == EOF)
+            if (user_command.command_char == EOF)
             {
                 /* if the command was invalid, the text entered
                  * by the user is stored in the command_string */
-                printf("Error: %s is not a valid command\n", 
-                                        processed_command.command_string);
+                printf("Error: %s is not a valid command\n",
+                       processed_command.command_string);
             }
             else
             {
 
                 /* otherwise perform the command */
-                executed_successfully = user_command.command(&picedit, 
-                                                           &processed_command);
-                if(!executed_successfully)
+                executed_successfully = user_command.command(&picedit,
+                                                             &processed_command);
+                if (!executed_successfully)
                 {
                     /* if the command failed, display an 
                      * error message which shows which 
                      * action was attempted and a failure 
                      * message
                      */
-                    printf("Error: the %s command failed\n", 
-                                                user_command.command_name);
+                    printf("Error: the %s command failed\n",
+                           user_command.command_name);
                 }
             }
             /* frees the malloc'ed section of the command_input */
@@ -137,4 +137,3 @@ int main(int argc, char* argv[])
     free((char *)picedit.current_file);
     return EXIT_SUCCESS;
 }
-
